@@ -7,6 +7,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  *
  */
 public class SDES {
+	private final static int[] EP= {3,0,1,2,1,2,3,0};
+	private final static int[] P4= {1,3,2,0};
 	public SDES() {}
 	/***
 	 * Convert the given bit array to a single byte
@@ -39,7 +41,7 @@ public class SDES {
 	 * @param y
 	 * @return the concatenation of x and y
 	 */
-	public boolean concat(boolean[] x, boolean[] y) {
+	public boolean[] concat(boolean[] x, boolean[] y) {
 		throw new NotImplementedException();
 	}
 	/***
@@ -96,7 +98,7 @@ public class SDES {
 	 * @return result of f operation
 	 */
 	public boolean[] f(boolean[] x, boolean[] k) {
-		throw new NotImplementedException();
+		return concat(xor(lh(x),feistel(rh(x),k)),rh(x));
 	}
 	/***
 	 * F(k,x) is a Feistel function F(k,x) = P4 (s0 (L (k xor EP(x))) || s1 (R (k xor EP(x)))
@@ -105,7 +107,7 @@ public class SDES {
 	 * @return the result of feistal
 	 */
 	public boolean[] feistel(boolean[] k,boolean[] x) {
-		throw new NotImplementedException();
+		return expPerm(concat(s0(lh(xor(k,expPerm(x,EP)))),s1(rh(xor(k,expPerm(x,EP))))),P4);
 	}
 	/***
 	 * Get a 10 bit key from the keyboard, such as 1010101010. Store it as an array of booleans in a field.
@@ -153,7 +155,22 @@ public class SDES {
 	public boolean[] xor(boolean[] x,boolean[] y) {
 		throw new NotImplementedException();
 	}
-	
+	/***
+	 * s0 function 
+	 * @param input 4 bit input to the s function
+	 * @return two bit output of sblock
+	 */
+	public boolean[] s0(boolean[] input) {
+		throw new NotImplementedException();
+	}
+	/***
+	 * s1 function 
+	 * @param input 4 bit input to the s function
+	 * @return two bit output of sblock
+	 */
+	public boolean[] s1(boolean[] input) {
+		throw new NotImplementedException();
+	}
 			
 	
 }
