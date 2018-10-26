@@ -204,6 +204,7 @@ public class SDES {
 		throw new NotImplementedException();
 	}
 	/***
+	 * @author Jamie Walder 
 	 * s0 function 
 	 * @param input 4 bit input to the s function
 	 * @return two bit output of sblock
@@ -212,6 +213,7 @@ public class SDES {
 		return this.s0[bitArrayToByte(input)];
 	}
 	/***
+	 * @author Jamie Walder 
 	 * s1 function 
 	 * @param input 4 bit input to the s function
 	 * @return two bit output of sblock
