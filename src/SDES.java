@@ -5,12 +5,13 @@ import java.util.Scanner;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 /***
  * 
- * @author Jamie Walder,,
+ * @author Jamie Walder, Matthew Mallon,
  *
  */
 public class SDES {
 	private final static int[] EP= {3,0,1,2,1,2,3,0};
 	private final static int[] P4= {1,3,2,0};
+	public boolean[] key = new boolean[10];
 	//boolean arrays when turn into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in bytes and 0 in base ten and thus position 0 in our table
 	//s0
 	//0000:01,0001:11,0010:00,0011:10,0100:11,0101:01,0110:10,0111:00
@@ -58,29 +59,47 @@ public class SDES {
 	public SDES() {
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Convert the given bit array to a single byte
 	 * @param inp A bit array, max length is 8 bits
 	 * @return
 	 */
 	public byte bitArrayToByte(boolean[] inp) {
-		throw new NotImplementedException();
+		byte temp = 0;
+	        for (int bit = 0; bit < 8; bit++) {
+	            if (inp[bit]) {
+	                temp |= (128 >> bit);
+	            }
+	        }
+	    return temp;
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Convert the given byte array to a String
 	 * @param inp An array of bytes, hopefully storing the codes of printable characters.
 	 * @return The characters as a String.
 	 */
 	public String byteArrayToString(byte[] inp) {
-		throw new NotImplementedException();
+		return new String(inp);
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Convert the given byte to a bit array, of the given size.
 	 * @param b a byte to be converted
 	 * @param size The size of the resulting bit array. The operator >>> can be used for an unsigned right shift.
 	 * @return
 	 */
 	public boolean[] byteToBitArray(byte b,int size) {
-		throw new NotImplementedException();
+		 boolean[] boolArr = new boolean[8];
+		    boolArr[7] = ((b & 0x01) != 0);
+		    boolArr[6] = ((b & 0x02) != 0);
+		    boolArr[5] = ((b & 0x04) != 0);
+		    boolArr[4] = ((b & 0x08) != 0);
+		    boolArr[3] = ((b & 0x10) != 0);
+		    boolArr[2] = ((b & 0x20) != 0);
+		    boolArr[1] = ((b & 0x40) != 0);
+		    boolArr[0] = ((b & 0x80) != 0);
+		    return boolArr;
 	}
 	/***
 	 *  Concatenate the two bit arrays, x || y
@@ -89,7 +108,15 @@ public class SDES {
 	 * @return the concatenation of x and y
 	 */
 	public boolean[] concat(boolean[] x, boolean[] y) {
-		throw new NotImplementedException();
+		int size = x.length + y.length;
+		boolean[] concat = new boolean[size];
+		for(int i = 0; i < x.length; i++) {
+			concat[i] = x[i];
+		}
+		for(int i = 0; i < y.length; i++) {
+			concat[i + x.length] = y[i];
+		}
+		return concat;
 	}
 	/***
 	 * Decrypt the given byte array.
@@ -124,6 +151,7 @@ public class SDES {
 		throw new NotImplementedException();
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Expand and/or permute and/or select from the bit array, 
 	 * inp, producing an expanded/permuted/selected 
 	 * bit array. Use the expansion/permutation vector epv.
@@ -135,7 +163,17 @@ public class SDES {
 	 * @throws java.lang.IndexOutOfBoundsException
 	 */
 	public boolean[] expPerm(boolean[] inp, int[] evp) throws IndexOutOfBoundsException {
-		throw new NotImplementedException();
+		boolean[] expPerm = new boolean[inp.length];
+		for(int i = 0; i < evp.length; i++) {
+			if(evp[i] < 0 || evp[i] >= inp.length) {
+				throw new IndexOutOfBoundsException("All numbers in expansion, permutation, "
+						+ "or selection vector must be in range 0..." + Integer.toString(inp.length-1));
+			}
+			else {
+				expPerm[i] = inp[evp[i]];
+			}
+		}
+		return expPerm;
 	}
 	/***
 	 * This is the 'round' function. It is its own inverse. f(x,k) = (L(x) xor F(R(x), k)) || R(x)
@@ -158,27 +196,56 @@ public class SDES {
 		return expPerm(concat(s0(lh(xor(k,expPerm(x,EP)))),s1(rh(xor(k,expPerm(x,EP))))),P4);
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Get a 10 bit key from the keyboard, such as 1010101010. Store it as an array of booleans in a field.
 	 * @param scanner
 	 */
 	public void getKey10(Scanner scanner) {
-		throw new NotImplementedException();
+		String stringKey = "";
+		System.out.println ("Enter 10 bit key");
+		stringKey = scanner.nextLine();
+		if(stringKey.length() != 10) {
+			throw new IllegalArgumentException("Key must be 10 bits");
+		}
+		for(int i = 0; i < stringKey.length(); i++) {
+			if(stringKey.charAt(i) == '0') {
+				key[i] = false;
+			}
+			else if(stringKey.charAt(i) == '1') {
+				key[i] = true;
+			}
+			else {
+				throw new IllegalArgumentException("Bits in key must be 0 or 1");
+			}
+		}	
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Left half of x, L(x)
 	 * @param inp input
 	 * @return a bit array which is the left half of the parameter, inp.
 	 */
 	public boolean[] lh(boolean[] inp) {
-		throw new NotImplementedException();
+		int size = inp.length/2;
+		boolean[] lh = new boolean[size];
+		for(int i = 0; i < size; i++) {
+			lh[i] = inp[i];
+		}
+		return lh;
 	}
 	/***
+	 * @author Matthew Mallon
 	 * Right half of x, R(x)
 	 * @param inp input
 	 * @return a bit array which is the right half of the parameter, inp.
 	 */
 	public boolean[] rh(boolean[] inp) {
-		throw new NotImplementedException();	
+		int size = inp.length/2;
+		boolean[] rh = new boolean[size];	
+		for(int i = 0; i < size; i++) {
+			rh[i] = inp[i + size];
+		}
+		return rh;
 	}
 	/***
 	 * Send the bitArray to stdout as 1's and 0's
@@ -201,7 +268,20 @@ public class SDES {
 	 * @return the resulting xor of x and y
 	 */
 	public boolean[] xor(boolean[] x,boolean[] y) {
-		throw new NotImplementedException();
+		if(x.length != y.length) {
+			throw new IllegalArgumentException("x and y must be same length");
+		}
+		int size = x.length;
+		boolean[] xor = new boolean[size];
+		for(int i = 0; i < size; i++) {
+			if(x[i] != y[i]) {
+				xor[i] = true;
+			}
+			else {
+				xor[i] = false;
+			}
+		}
+		return xor;
 	}
 	/***
 	 * @author Jamie Walder 
