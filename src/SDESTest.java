@@ -56,12 +56,28 @@ class SDESTest {
 
 	@Test
 	void testF() {
-		fail("Not yet implemented");
+		SDES sdes=new SDES();
+		boolean[] x= {true,false,true,false,true,false,true,false};
+		boolean[] k= {true,false,true,false,true,false,true,false};
+		boolean[] idealResult= {true,true,false,true,true,false,true,false};
+		boolean[] result=sdes.f(x, k);
+		for(int i=0;i<idealResult.length;i++) {
+			assertTrue(result[i]==idealResult[i]);
+		}
+		
 	}
 
 	@Test
 	void testFeistel() {
-		fail("Not yet implemented");
+		SDES sdes=new SDES();
+		boolean[] x= {true,false,true,false};
+		boolean[] k= {true,false,true,false,true,false,true,false};
+		boolean[] idealResult= {false,true,true,true};
+		boolean[] result=sdes.feistel(k, x);
+		for(int i=0;i<idealResult.length;i++) {
+			assertTrue(result[i]==idealResult[i]);
+		}
+		
 	}
 
 	@Test

@@ -1,3 +1,5 @@
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.*;
 /**
  * Test the implementation of SDES
@@ -9,7 +11,7 @@ public class Driver
 {
    public static void main(String [] args)
 {   SDES sdes = new SDES();
-
+	
     Scanner scanner = new Scanner (System.in);
     
 //    **tests expPerm**

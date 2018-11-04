@@ -12,7 +12,7 @@ public class SDES {
 	private final static int[] EP= {3,0,1,2,1,2,3,0};
 	private final static int[] P4= {1,3,2,0};
 	public boolean[] key = new boolean[10];
-	//boolean arrays when turn into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in bytes and 0 in base ten and thus position 0 in our table
+	//boolean arrays when turned into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in bytes and 0 in base ten and thus position 0 in our table
 	//s0
 	//0000:01,0001:11,0010:00,0011:10,0100:11,0101:01,0110:10,0111:00
 	//1000:00,1001:11,1010:10,1011:01,1100:01,1101:11,1110:11,1111:10
@@ -34,7 +34,7 @@ public class SDES {
 			{true,true},//1110
 			{true,false}//1111
 	};
-	//boolean arrays when turn into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in bytes and 0 in base ten and thus position 0 in our table
+	//boolean arrays whened turn into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in bytes and 0 in base ten and thus position 0 in our table
 		//s1
 		//0000:00,0001:10,0010:01,0011:00,0100:10,0101:01,0110:11,0111:11
 		//1000:11,1001:10,1010:00,1011:01,1100:01,1101:00,1110:00,1111:11
@@ -163,7 +163,7 @@ public class SDES {
 	 * @throws java.lang.IndexOutOfBoundsException
 	 */
 	public boolean[] expPerm(boolean[] inp, int[] evp) throws IndexOutOfBoundsException {
-		boolean[] expPerm = new boolean[inp.length];
+		boolean[] expPerm = new boolean[evp.length];
 		for(int i = 0; i < evp.length; i++) {
 			if(evp[i] < 0 || evp[i] >= inp.length) {
 				throw new IndexOutOfBoundsException("All numbers in expansion, permutation, "
@@ -183,7 +183,7 @@ public class SDES {
 	 * @return result of f operation
 	 */
 	public boolean[] f(boolean[] x, boolean[] k) {
-		return concat(xor(lh(x),feistel(rh(x),k)),rh(x));
+		return concat(xor(lh(x),feistel(k,rh(x))),rh(x));
 	}
 	/***
 	 * @author Jamie Walder
@@ -193,7 +193,8 @@ public class SDES {
 	 * @return the result of feistal
 	 */
 	public boolean[] feistel(boolean[] k,boolean[] x) {
-		return expPerm(concat(s0(lh(xor(k,expPerm(x,EP)))),s1(rh(xor(k,expPerm(x,EP))))),P4);
+		boolean[] xor=xor(k,expPerm(x,EP));
+		return expPerm(concat(s0(lh(xor)),s1(rh(xor))),P4);
 	}
 	/***
 	 * @author Matthew Mallon
@@ -290,6 +291,8 @@ public class SDES {
 	 * @return two bit output of sblock
 	 */
 	public boolean[] s0(boolean[] input) {
+		boolean[] buffer={false,false,false,false};
+		input=concat(buffer,input);
 		return this.s0[bitArrayToByte(input)];
 	}
 	/***
@@ -299,6 +302,8 @@ public class SDES {
 	 * @return two bit output of sblock
 	 */
 	public boolean[] s1(boolean[] input) {
+		boolean[] buffer={false,false,false,false};
+		input=concat(buffer,input);
 		return this.s1[bitArrayToByte(input)];
 		
 	}
