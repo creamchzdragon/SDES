@@ -1,57 +1,69 @@
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 class SDESTest {
-
+	SDES sdes=new SDES();
 	@Test
 	void testSDES() {
-		fail("Not yet implemented");
+		byte[] cipher= {
+				-115, -17, -47, -113, -43, -47, 15, 84,
+				-43, -113, -17, 84, -43, 79, 58, 15, 64, -113, -43, 65, -47, 127,
+				84, 64, -43, -61, 79, -43, 93, -61, -14, 15, -43, -113, 84, -47, 127,
+				-43, 127, 84, 127, 10, 84, 15, 64, 43
+		};
+		//0111 1111 01 
+		boolean[] key= {false,true,true ,true, true,true,true,true, false,true};
+		SDES sdes=new SDES();
+		sdes.key=key;
+		byte[] plain=sdes.decrypt(cipher);
+		assertTrue(sdes.byteArrayToString(plain).equals("What are the first names of your team members?"));
+		
 	}
 
 	@Test
 	void testBitArrayToByte() {
-		fail("Not yet implemented");
+		//01010101
+		//1+4+16+64=85
+		boolean[] barr= {false,true,false,true,false,true,false,true};
+		assertTrue(sdes.bitArrayToByte(barr)==85);
 	}
 
 	@Test
 	void testByteArrayToString() {
-		fail("Not yet implemented");
+		byte[] barr= {97,98,99};
+		assertTrue(sdes.byteArrayToString(barr).equals("abc"));
 	}
 
 	@Test
 	void testByteToBitArray() {
-		fail("Not yet implemented");
+		boolean[] barr= {false,true,false,true,false,true,false,true};
+		assertTrue(Arrays.equals(sdes.byteToBitArray((byte)85,8),barr));
 	}
 
 	@Test
 	void testConcat() {
-		fail("Not yet implemented");
+		boolean[] r= {true,true,true,true};
+		boolean[] l= {false,false,false,false};
+		boolean[] result= {true,true,true,true,false,false,false,false};
+		assertTrue(Arrays.equals(sdes.concat(r, l),result));
 	}
 
-	@Test
-	void testDecrypt() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testDecryptByte() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testEncrypt() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	void testEncryptByte() {
-		fail("Not yet implemented");
-	}
+	
 
 	@Test
 	void testExpPerm() {
-		fail("Not yet implemented");
+		int[] InitPerm= {1,5,2,0,3,7,4,6};
+		int[] InvInitPerm= {3,0,2,4,6,1,7,5};
+		boolean[] start= {true,false,true,false,true,false,true,false};
+		SDES sdes=new SDES();
+		
+		System.out.println("Exp Perm Test");
+		for(boolean b:sdes.expPerm(sdes.expPerm(start, InitPerm),InvInitPerm)){
+			System.out.print(b+",");
+		}
 	}
 
 	@Test
@@ -80,34 +92,30 @@ class SDESTest {
 		
 	}
 
-	@Test
-	void testGetKey10() {
-		fail("Not yet implemented");
-	}
+
 
 	@Test
 	void testLh() {
-		fail("Not yet implemented");
+		boolean[] test= {true,false};
+		assertTrue(sdes.lh(test)[0]);
 	}
 
 	@Test
 	void testRh() {
-		fail("Not yet implemented");
+		boolean[] test= {false,true};
+		assertTrue(sdes.rh(test)[0]);
 	}
 
-	@Test
-	void testShowBooleanArray() {
-		fail("Not yet implemented");
-	}
+	
 
-	@Test
-	void testShowByteArray() {
-		fail("Not yet implemented");
-	}
+	
 
 	@Test
 	void testXor() {
-		fail("Not yet implemented");
+		 boolean[] exp1= {true,true,false,true};
+		 boolean[] exp2= {true,true,false,true};
+		 boolean[] result= {false,false,false,false};
+		 assertTrue(Arrays.equals(sdes.xor(exp1, exp2),result));
 	}
 
 }

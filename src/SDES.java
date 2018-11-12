@@ -1,7 +1,5 @@
-package sdes;
 
-import java.util.HashMap;
-import java.util.Map;
+
 import java.util.Scanner;
 
 /***
@@ -14,9 +12,10 @@ public class SDES {
 	private final static int[] P4= {1,3,2,0};
 	private final static int[] InitPerm= {1,5,2,0,3,7,4,6};
 	private final static int[] InvInitPerm= {3,0,2,4,6,1,7,5};
-	private final static int[] K1Perm= {0,1,0,1,1,1,1,1};
-	private final static int[] K2Perm= {1,1,1,1,1,1,0,0};
+	private final static int[] K1Perm= {0,6,8,3,7,2,9,5};
+	private final static int[] K2Perm= {7,2,5,4,9,1,8,0};
 	public boolean[] key = new boolean[10];
+	//@author Jamie Walder
 	//boolean arrays when turned into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in 
 	//bytes and 0 in base ten and thus position 0 in our table
 	//s0
@@ -40,6 +39,7 @@ public class SDES {
 			{true,true},//1110
 			{true,false}//1111
 	};
+	//@author Jamie Walder
 	//boolean arrays whened turn into bytes are equivalent to one of these sixteen arrays ie [0,0,0,0] is 0000 in 
 	//bytes and 0 in base ten and thus position 0 in our table
 		//s1
@@ -63,6 +63,9 @@ public class SDES {
 				{false,false},//1110
 				{true,true}//1111
 		};
+		/***
+		 * default constructor
+		 */
 	public SDES() {
 	}
 	/***
@@ -135,8 +138,6 @@ public class SDES {
 	public byte[] encrypt(String plain) {
 		byte[] plainBytes = plain.getBytes();
 		byte[] result = new byte[plainBytes.length];
-		
-		
 		for(int i = 0; i < plainBytes.length; i++)
 			result[i] = encryptByte(plainBytes[i]);
 		
@@ -153,11 +154,10 @@ public class SDES {
 		boolean[] bitArray = byteToBitArray(b, 10);
 		boolean[] k1 = expPerm(key, K1Perm);
 		boolean[] k2 = expPerm(key, K2Perm);
-		
 		boolean[] IP = expPerm(bitArray, InitPerm);
-		boolean[] fk1 = concat(xor(lh(IP), feistel(k1, rh(IP))), rh(IP));
+		boolean[] fk1 = f(IP,k1);
 		boolean[] swapfk1 = concat(rh(fk1), lh(fk1));
-		boolean[] fk2 = concat(xor(lh(swapfk1), feistel(k2, rh(swapfk1))), rh(swapfk1));
+		boolean[] fk2 = f(swapfk1,k2);
 		boolean[] cipher = expPerm(fk2, InvInitPerm);
 		
 		return bitArrayToByte(cipher);
@@ -189,9 +189,9 @@ public class SDES {
 		boolean[] k2 = expPerm(key, K2Perm);
 		
 		boolean[] IP = expPerm(arrayByte, InitPerm);
-		boolean[] inversefk2 = concat(xor(lh(IP), feistel(k2, rh(IP))), rh(IP));
+		boolean[] inversefk2 = f(IP,k2);
 		boolean[] swapfk2 = concat(rh(inversefk2), lh(inversefk2));
-		boolean[] fk1 = concat(xor(lh(swapfk2), feistel(k1, rh(swapfk2))), rh(swapfk2));
+		boolean[] fk1 = f(swapfk2,k1);
 		boolean[] plain = expPerm(fk1, InvInitPerm);
 		
 		return bitArrayToByte(plain);
@@ -240,9 +240,8 @@ public class SDES {
 		}
 		return expPerm;
 	}
-	/***
+	/***@author Jamie Walder
 	 * This is the 'round' function. It is its own inverse. f(x,k) = (L(x) xor F(R(x), k)) || R(x)
-	 *@author Jamie Walder
 	 * @param x input message
 	 * @param k key 
 	 * @return result of f operation
